@@ -1,0 +1,59 @@
+# Visual Studio left-overs
+*.suo
+*.ncb
+*.user
+*.ccscc
+*.cache
+
+# Editor left-overs
+*.bak
+*.orig
+
+applicationhost.config
+
+# Compiled files
+bin
+build
+obj
+Obj
+Generated_Code
+PrecompiledWeb
+ClientBin
+Publish
+DeployServices
+
+# NuGet packages (we use automatic restore)
+packages
+
+# Re-include package directories for API that should be there
+!/OC.Portal.H2O/v*/Packages/
+
+# Unit Testing
+TestResults
+
+# Windows left-overs
+Thumbs.db
+
+# Shared Controls
+SharedControls
+SharedCSS
+SharedImages
+SharedScripts
+SharedWebServices
+SharedModules
+SharedHandlers
+SharedFonts
+
+# Re-include the Shared directories in the actual project
+!/OC.UI.Shared/SharedControls/
+!/OC.UI.Shared/SharedCSS/
+!/OC.UI.Shared/SharedImages/
+!/OC.UI.Shared/SharedScripts/
+!/OC.UI.Shared/SharedWebServices/
+!/OC.UI.Shared/SharedModules/
+!/OC.UI.Shared/SharedHandlers/
+!/OC.UI.Shared/SharedFonts/
+
+# Ignore 
+git_version.txt
+.vs/

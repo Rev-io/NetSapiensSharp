@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>NetSapiensSharp</id>
+    <title>NetSapiensSharp</title>
+    <version>1.0.0</version>
+    <authors>Ross Overstreet</authors>
+    <owners>Ross Overstreet</owners>
+    <projectUrl>https://github.com/rossover/NetSapiensSharp</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>.NET library for interfacing with the NetSapiens platform</description>
+    <dependencies>
+      <group>
+        <dependency id="RestSharp" version="105.2.3" />
+      </group>
+    </dependencies>  
+  </metadata>
+</package>
