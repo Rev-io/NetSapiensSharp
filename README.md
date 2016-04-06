@@ -4,7 +4,9 @@ An easy-to-use .NET client library for NetSapiens REST API.
 
 # How to add to your project
 
-Add to your project using Nuget.  From Visual Studio, click Tools menu -> NuGet Package Manager -> Package Manager Console.
+Add to your project using Nuget.  
+
+From Visual Studio, click the Tools menu -> NuGet Package Manager -> Package Manager Console.
 
 From the console, run the following command:
 
@@ -28,7 +30,7 @@ All examples below assume you have completed this and have `connector` instantia
       {
         using (var connector = new Connector(API_BASE_URL, CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD)) 
         {
-          var domain_List = Objects.Domain.List(connector, territory: "territory_name");    
+          var domains = Objects.Domain.List(connector, territory: "territory_name");    
         }
       }
     }
@@ -50,7 +52,7 @@ All examples below assume you have completed this and have `connector` instantia
 ## Domains
 
 ### List by Territory
-    var list = Objects.Domain.List(connector, territory: "overgroup");
+    var list = Objects.Domain.List(connector, territory: "territory_name");
 
 ### Create a Domain
     var domain = new Objects.Domain.item() { 
@@ -59,7 +61,7 @@ All examples below assume you have completed this and have `connector` instantia
       dial_plan = "dial_plan", 
       description = "example description" 
     };
-    var domain_create = Objects.Domain.Create(connector, domain);
+    var response = Objects.Domain.Create(connector, domain);
 
 ### Update a Domain  
     var domain = new Objects.Domain.item() { 
@@ -68,7 +70,7 @@ All examples below assume you have completed this and have `connector` instantia
       dial_plan = "dial_plan", 
       description = "new description" 
     };
-    //var domain_update = Objects.Domain.Update(connector, domain);
+    var response = Objects.Domain.Update(connector, domain);
 
 ### Delete a Domain
     var response = Objects.Domain.Delete(connector, domain: "domain_to_delete");
