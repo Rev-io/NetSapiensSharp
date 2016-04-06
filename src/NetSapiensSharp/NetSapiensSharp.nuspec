@@ -8,7 +8,7 @@
     <owners>Ross Overstreet</owners>
     <projectUrl>https://github.com/rossover/NetSapiensSharp</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>.NET library for interfacing with the NetSapiens platform</description>
+    <description>An easy-to-use .NET client library for NetSapiens REST API.</description>
     <dependencies>
       <group>
         <dependency id="RestSharp" version="105.2.3" />
