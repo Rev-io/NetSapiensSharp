@@ -45,7 +45,7 @@ namespace NetSapiensSharp.Objects
             {
                 dialplan = "DID Table";
             }
-            var request = connector.CreateRequest<List<Item>>($"/?format=json&object={OBJECT_NAME}&action=read");
+            var request = connector.CreateRequest<List<Item>>(@"/?format=json&object={OBJECT_NAME}&action=read");
             request.AddField(nameof(dialplan), dialplan);
             request.AddField(nameof(dest_domain), dest_domain);
             request.AddField(nameof(matchrule), matchrule);
@@ -60,7 +60,7 @@ namespace NetSapiensSharp.Objects
             {
                 dialplan = "DID Table";
             }
-            var request = connector.CreateRequest<Common.Count>($"/?format=json&object={OBJECT_NAME}&action=count");
+            var request = connector.CreateRequest<Common.Count>(@"/?format=json&object={OBJECT_NAME}&action=count");
             request.AddField(nameof(dialplan), dialplan);
             request.AddField(nameof(dest_domain), dest_domain);
             request.AddField(nameof(matchrule), matchrule);
@@ -74,14 +74,14 @@ namespace NetSapiensSharp.Objects
             {
                 item.dialplan = "DID Table";
             }
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=delete");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=delete");
             request.AddFields(item);
             return connector.Send(request);
         }
 
         public static IRestResponse<Common.OK> Create(Connector connector, Item item)
         {
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=create");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=create");
             request.AddFields(item);
             return connector.Send(request);
         }
@@ -92,7 +92,7 @@ namespace NetSapiensSharp.Objects
             {
                 item.dialplan = "DID Table";
             }
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=update");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=update");
             request.AddFields(item);
             return connector.Send(request);
         }
@@ -156,7 +156,7 @@ namespace NetSapiensSharp.Objects
 
         public static string FormatPhoneNumber(string number)
         {
-            return (number != null && number != "") ? number.StartsWith("sip") ? number : $"sip:1{number.TrimStart('1')}@*" : number;
+            return (number != null && number != "") ? number.StartsWith("sip") ? number : @"sip:1{number.TrimStart('1')}@*" : number;
         }
 
         public static string UnformatPhoneNumber(string number)

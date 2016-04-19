@@ -45,7 +45,7 @@ namespace NetSapiensSharp.Objects
 
         public static IRestResponse<List<Item>> List(Connector connector, string territory = null, string domain = null)
         {
-            var request = connector.CreateRequest<List<Item>>($"/?format=json&object={OBJECT_NAME}&action=read");
+            var request = connector.CreateRequest<List<Item>>(@"/?format=json&object={OBJECT_NAME}&action=read");
             request.AddField(nameof(territory), territory);
             request.AddField(nameof(domain), domain);
             var response = connector.Send(request);
@@ -60,28 +60,28 @@ namespace NetSapiensSharp.Objects
         }
         public static IRestResponse<Common.Count> Count(Connector connector, string territory = null, string domain = null)
         {
-            var request = connector.CreateRequest<Common.Count>($"/?format=json&object={OBJECT_NAME}&action=count");
+            var request = connector.CreateRequest<Common.Count>(@"/?format=json&object={OBJECT_NAME}&action=count");
             request.AddField(nameof(territory), territory);
             request.AddField(nameof(domain), domain);
             return connector.Send(request);
         }
         public static IRestResponse<Common.OK> Delete(Connector connector, string domain)
         {
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=delete");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=delete");
             request.AddField(nameof(domain), domain);
             return connector.Send(request);
         }
 
         public static IRestResponse<Common.OK> Create(Connector connector, Item item)
         {
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=create");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=create");
             request.AddFields(item);
             return connector.Send(request);
         }
 
         public static IRestResponse<Common.OK> Update(Connector connector, Item item)
         {
-            var request = connector.CreateRequest<Common.OK>($"/?format=json&object={OBJECT_NAME}&action=update");
+            var request = connector.CreateRequest<Common.OK>(@"/?format=json&object={OBJECT_NAME}&action=update");
             request.AddFields(item);
             return connector.Send(request);
         }
