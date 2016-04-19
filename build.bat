@@ -4,11 +4,6 @@ if "%config%" == "" (
    set config=Release
 )
  
-set version=1.0.2
-if not "%PackageVersion%" == "" (
-   set version=%PackageVersion%
-)
-
 set nuget=
 if "%nuget%" == "" (
 	set nuget=tools\nuget
@@ -22,4 +17,4 @@ mkdir Build
 mkdir Build\lib
 mkdir Build\lib\net40
 
-%nuget% pack "src\NetSapiensSharp\NetSapiensSharp.nuspec" -NoPackageAnalysis -verbosity detailed -o Build -Version %version% -p Configuration="%config%"
+%nuget% pack "src\NetSapiensSharp\NetSapiensSharp.nuspec" -NoPackageAnalysis -verbosity detailed -o Build -p Configuration="%config%"

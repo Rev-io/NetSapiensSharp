@@ -57,3 +57,4 @@ SharedFonts
 # Ignore 
 git_version.txt
 .vs/
+/src/NetSapiensSharp.Demo/Auth.private.cs
