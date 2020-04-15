@@ -3,15 +3,17 @@
   <metadata>
     <id>NetSapiensSharp</id>
     <title>NetSapiensSharp</title>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <authors>Ross Overstreet</authors>
     <owners>Ross Overstreet</owners>
-    <projectUrl>https://github.com/rossover/NetSapiensSharp</projectUrl>
+    <projectUrl>https://github.com/Rev-io/NetSapiensSharp</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An easy-to-use .NET client library for NetSapiens REST API.</description>
     <dependencies>
       <group>
-        <dependency id="RestSharp" version="105.2.3" />
+        <dependency id="Newtonsoft.Json" version="12.0.3" />
+        <dependency id="RestSharp" version="106.10.1" />
+        <dependency id="RestSharp" version="106.10.1" />
       </group>
     </dependencies>  
   </metadata>

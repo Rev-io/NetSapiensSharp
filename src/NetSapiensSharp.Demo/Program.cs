@@ -7,7 +7,8 @@ namespace NetSapiensSharp.Demo
     {
         static void Main(string[] args)
         {
-            using (var auth = new Auth())
+            var auth = new Auth();
+
             using (var c = new Connector(auth.url, auth.clientId, auth.clientSecret, auth.username, auth.password))
             {
                 ListResellers(c);

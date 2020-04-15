@@ -1,13 +1,11 @@
 ﻿using System;
 using RestSharp;
+using RestSharp.Serializers.NewtonsoftJson;
 
 namespace NetSapiensSharp
 {
     public class Connector : IDisposable
     {
-        private IRestClient _Client { get; set; }
-        public IRestRequest _Request { get; set; }
-
         private string _ApiBaseUrl;
         private string _ClientId;
         private string _ClientSecret;
@@ -18,7 +16,7 @@ namespace NetSapiensSharp
 
         public Connector(string api_base_url, string client_id, string client_secret, string username, string password)
         {
-            _ApiBaseUrl = api_base_url;
+            _ApiBaseUrl = api_base_url.TrimEnd('/') + '/';
             _ClientId = client_id;
             _ClientSecret = client_secret;
             _Username = username;
@@ -73,12 +71,11 @@ namespace NetSapiensSharp
         {
             var myItem = new Request<Tresponse>()
             {
-                _Client = new RestClient(_ApiBaseUrl),
-                _Request = new RestRequest(action_path, Method.POST)
+                _Client = new RestClient(_ApiBaseUrl).UseNewtonsoftJson(),
+                _Request = new RestRequest(action_path, Method.POST, DataFormat.Json)
             };
-            myItem._Client.AddHandler("text/html", new RestSharp.Deserializers.JsonDeserializer());
+            myItem._Client.AddHandler("text/html", () => new JsonNetSerializer());
             myItem._Request.AddHeader("content-type", "application/json");
-            myItem._Request.RequestFormat = DataFormat.Json;
             return myItem;
         }
 
@@ -109,8 +106,8 @@ namespace NetSapiensSharp
 
         private static IRestResponse<Authentication_Response> Authenticate(string api_base_url, string client_id, string client_secret, string refresh_token)
         {
-            var client = new RestClient(api_base_url);
-            client.AddHandler("text/html", new RestSharp.Deserializers.JsonDeserializer());
+            var client = new RestClient(api_base_url).UseNewtonsoftJson();
+            client.AddHandler("text/html", () => new JsonNetSerializer());
             var request = new RestRequest("/oauth2/token/", Method.POST);
             request.AddParameter("grant_type", "refresh_token");
             request.AddParameter("client_id", client_id);
@@ -121,8 +118,8 @@ namespace NetSapiensSharp
 
         private static IRestResponse<Authentication_Response> Authenticate(string api_base_url, string client_id, string client_secret, string username, string password)
         {
-            var client = new RestClient(api_base_url);
-            client.AddHandler("text/html", new RestSharp.Deserializers.JsonDeserializer());
+            var client = new RestClient(api_base_url).UseNewtonsoftJson();
+            client.AddHandler("text/html", () => new JsonNetSerializer());
             var request = new RestRequest("/oauth2/token/", Method.POST);
             request.AddParameter("grant_type", "password");
             request.AddParameter("client_id", client_id);
