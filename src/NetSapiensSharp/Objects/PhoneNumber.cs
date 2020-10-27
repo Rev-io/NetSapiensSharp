@@ -29,9 +29,9 @@ namespace NetSapiensSharp.Objects
             public string valid_from { get; set; }
             public string valid_to { get; set; }
 
-            public List<string> from_host { get; set; }
-            public List<string> from_name { get; set; }
-            public List<string> from_user { get; set; }
+            public string from_host { get; set; }
+            public string from_name { get; set; }
+            public string from_user { get; set; }
 
             public bool IsAssignedToUser()
             {

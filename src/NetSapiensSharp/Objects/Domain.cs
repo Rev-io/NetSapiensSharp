@@ -37,8 +37,8 @@ namespace NetSapiensSharp.Objects
             public string smtp_port { get; set; }
             public string smtp_uid { get; set; }
             public string smtp_pwd { get; set; }
-            public List<string> from_user { get; set; }
-            public List<string> from_host { get; set; }
+            public string from_user { get; set; }
+            public string from_host { get; set; }
             public int active_call { get; set; }
             public int sub_count { get; set; }
         }
