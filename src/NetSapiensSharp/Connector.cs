@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 
@@ -15,6 +16,7 @@ namespace NetSapiensSharp
         private string _RefreshToken;
         private int _ExpiresInSeconds;
         private DateTime _ExpirationStartTime = DateTime.UtcNow;
+        private const int _UnauthorizedRetryLimit = 5;
 
         public Connector(string api_base_url, string client_id, string client_secret, string username, string password)
         {
@@ -98,15 +100,30 @@ namespace NetSapiensSharp
             {
                 _SessionToken = null;
             }
+            int myRetryCount = 1;
+            RequestRetry:
+
             Authenticate();
             request._Request.AddHeader("Authorization", "Bearer " + _SessionToken);
             var r = request._Client.Execute<Tresponse>(request._Request);
-            if (r.StatusCode == System.Net.HttpStatusCode.OK && r.Data == null && typeof(Tresponse) == typeof(Common.OK))
+            if (r.StatusCode == System.Net.HttpStatusCode.Unauthorized && myRetryCount <= _UnauthorizedRetryLimit)
+            {
+                _SessionToken = null;
+                var myOldAuthHeader = request._Request.Parameters.Where(p => p.Name.Equals("Authorization")).First();
+                request._Request.Parameters.Remove(myOldAuthHeader);
+                myRetryCount++;
+                goto RequestRetry;
+            }
+            else if (r.StatusCode == System.Net.HttpStatusCode.OK && r.Data == null && typeof(Tresponse) == typeof(Common.OK))
             {
                 r.Data = new Tresponse();
                 r.ErrorException = null;
                 r.ErrorMessage = null;
                 r.ResponseStatus = ResponseStatus.Completed;
+            }
+            if (myRetryCount == _UnauthorizedRetryLimit)
+            {
+                throw new Exception($"Failed to authorize. Retry limit of {_UnauthorizedRetryLimit} has been reached.");
             }
             return r;
         }
