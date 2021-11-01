@@ -95,13 +95,12 @@ namespace NetSapiensSharp
         public IRestResponse<Tresponse> Send<Tresponse>(Request<Tresponse> request)
             where Tresponse : class, new()
         {
+            IRestResponse<Tresponse> myResponse = null;
+            int myRetryCount = 0;
             if (IsAccessTokenExpired())
             {
                 _SessionToken = null;
             }
-            IRestResponse<Tresponse> myResponse = null;
-            int myRetryCount = 1;
-
             do
             {
                 Authenticate();
@@ -122,11 +121,14 @@ namespace NetSapiensSharp
                     break;
                 }
             }
-            while (_SessionToken == null && myRetryCount <= _UnauthorizedRetryLimit);
+            while (_SessionToken == null && myRetryCount < _UnauthorizedRetryLimit);
 
             if (myRetryCount == _UnauthorizedRetryLimit)
             {
-                throw new Exception($"Failed to authorize. Retry limit of {_UnauthorizedRetryLimit} has been reached.");
+                myResponse.Data = null;
+                myResponse.ErrorException = null;
+                myResponse.ErrorMessage = $"Failed to authorize. Retry limit of {_UnauthorizedRetryLimit} has been reached.";
+                myResponse.ResponseStatus = ResponseStatus.Aborted;
             }
             return myResponse;
         }
