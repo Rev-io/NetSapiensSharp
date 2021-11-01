@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 
