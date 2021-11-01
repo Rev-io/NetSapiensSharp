@@ -100,32 +100,36 @@ namespace NetSapiensSharp
             {
                 _SessionToken = null;
             }
+            IRestResponse<Tresponse> myResponse = null;
             int myRetryCount = 1;
-            RequestRetry:
 
-            Authenticate();
-            request._Request.AddHeader("Authorization", "Bearer " + _SessionToken);
-            var r = request._Client.Execute<Tresponse>(request._Request);
-            if (r.StatusCode == System.Net.HttpStatusCode.Unauthorized && myRetryCount <= _UnauthorizedRetryLimit)
+            do
             {
-                _SessionToken = null;
-                var myOldAuthHeader = request._Request.Parameters.Where(p => p.Name.Equals("Authorization")).First();
-                request._Request.Parameters.Remove(myOldAuthHeader);
-                myRetryCount++;
-                goto RequestRetry;
+                Authenticate();
+                request._Request.AddOrUpdateParameter("Authorization", "Bearer " + _SessionToken, ParameterType.HttpHeader);
+                myResponse = request._Client.Execute<Tresponse>(request._Request);
+
+                if (myResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    _SessionToken = null;
+                    myRetryCount++;
+                }
+                else if (myResponse.StatusCode == System.Net.HttpStatusCode.OK && myResponse.Data == null && typeof(Tresponse) == typeof(Common.OK))
+                {
+                    myResponse.Data = new Tresponse();
+                    myResponse.ErrorException = null;
+                    myResponse.ErrorMessage = null;
+                    myResponse.ResponseStatus = ResponseStatus.Completed;
+                    break;
+                }
             }
-            else if (r.StatusCode == System.Net.HttpStatusCode.OK && r.Data == null && typeof(Tresponse) == typeof(Common.OK))
-            {
-                r.Data = new Tresponse();
-                r.ErrorException = null;
-                r.ErrorMessage = null;
-                r.ResponseStatus = ResponseStatus.Completed;
-            }
+            while (_SessionToken == null && myRetryCount <= _UnauthorizedRetryLimit);
+
             if (myRetryCount == _UnauthorizedRetryLimit)
             {
                 throw new Exception($"Failed to authorize. Retry limit of {_UnauthorizedRetryLimit} has been reached.");
             }
-            return r;
+            return myResponse;
         }
 
         private class Authentication_Response
