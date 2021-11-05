@@ -111,7 +111,7 @@ All examples below assume you have completed this and have `connector` instantia
 ## Building
 
 * Download the latest version of NuGet Pack and place in Tools directory
-* Delete Build directory
 * Update NetSapiensSharp.nuspec with new version (if necessary)
+* Build NetSapiensSharp project in **Release** mode (_IMPORTANT_)
 * Run build.bat
 * Package should be available for download in Build directory
