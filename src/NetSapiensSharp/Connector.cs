@@ -16,6 +16,7 @@ namespace NetSapiensSharp
         private int _ExpiresInSeconds;
         private DateTime _ExpirationStartTime = DateTime.UtcNow;
         private const int _UnauthorizedRetryLimit = 5;
+        private const int _ErroredRetryLimit = 5;
 
         public Connector(string api_base_url, string client_id, string client_secret, string username, string password)
         {
@@ -26,51 +27,47 @@ namespace NetSapiensSharp
             _Password = password;
         }
 
-        private void AuthenticateUsernamePassword()
-        {
-            var r = Connector.Authenticate(_ApiBaseUrl, _ClientId, _ClientSecret, _Username, _Password);
-            if (r.Data == null)
-            {
-                throw (r.ErrorException);
-            }
-            _SessionToken = r.Data.access_token;
-            _RefreshToken = r.Data.refresh_token;
-            _ExpiresInSeconds = r.Data.expires_in;
-            _ExpirationStartTime = DateTime.UtcNow;
-        }
-
-        private void AuthenticateRefreshToken()
-        {
-            var r = Connector.Authenticate(_ApiBaseUrl, _ClientId, _ClientSecret, _RefreshToken);
-            if (r.Data == null)
-            {
-                throw (r.ErrorException);
-            }
-            _SessionToken = r.Data.access_token;
-            _RefreshToken = r.Data.refresh_token;
-            _ExpiresInSeconds = r.Data.expires_in;
-            _ExpirationStartTime = DateTime.UtcNow;
-        }
-
         private void Authenticate()
         {
             if (_SessionToken != null)
             {
                 return;
             }
-            if (_RefreshToken != null)
+
+            IRestResponse<Authentication_Response> myResponse = null;
+            int myRetryCount = 0;
+
+            do
             {
-                try
+                if (myRetryCount > 0)
                 {
-                    AuthenticateRefreshToken();
+                    System.Threading.Thread.Sleep(CalculateWait(myRetryCount));
                 }
-                catch
+                if (_RefreshToken != null)
                 {
+                    myResponse = Connector.Authenticate(_ApiBaseUrl, _ClientId, _ClientSecret, _RefreshToken);
+                }
+                if (_SessionToken == null && _RefreshToken == null || myResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    myResponse = Connector.Authenticate(_ApiBaseUrl, _ClientId, _ClientSecret, _Username, _Password);
+                }
+                if (myResponse.Data == null)
+                {
+                    myRetryCount++;
+                }
+                else
+                {
+                    _SessionToken = myResponse.Data.access_token;
+                    _RefreshToken = myResponse.Data.refresh_token;
+                    _ExpiresInSeconds = myResponse.Data.expires_in;
+                    _ExpirationStartTime = DateTime.UtcNow;
                 }
             }
-            if (_SessionToken == null)
+            while (myResponse.Data == null && myRetryCount < _UnauthorizedRetryLimit);
+
+            if (myRetryCount == _UnauthorizedRetryLimit)
             {
-                AuthenticateUsernamePassword();
+                throw (myResponse.ErrorException);
             }
         }
 
@@ -96,7 +93,8 @@ namespace NetSapiensSharp
             where Tresponse : class, new()
         {
             IRestResponse<Tresponse> myResponse = null;
-            int myRetryCount = 0;
+            int myAuthorizationRetryCount = 0;
+            int myErrorRetryCount = 0;
             if (IsAccessTokenExpired())
             {
                 _SessionToken = null;
@@ -110,7 +108,12 @@ namespace NetSapiensSharp
                 if (myResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
                     _SessionToken = null;
-                    myRetryCount++;
+                    myAuthorizationRetryCount++;
+                }
+                else if (myResponse.ResponseStatus != ResponseStatus.Completed)
+                {
+                    _SessionToken = null;
+                    myErrorRetryCount++;
                 }
                 else if (myResponse.StatusCode == System.Net.HttpStatusCode.OK && myResponse.Data == null && typeof(Tresponse) == typeof(Common.OK))
                 {
@@ -121,16 +124,28 @@ namespace NetSapiensSharp
                     break;
                 }
             }
-            while (_SessionToken == null && myRetryCount < _UnauthorizedRetryLimit);
+            while (_SessionToken == null && ((myAuthorizationRetryCount > 0 && myAuthorizationRetryCount < _UnauthorizedRetryLimit) || (myErrorRetryCount > 0 && myErrorRetryCount < _ErroredRetryLimit)));
 
-            if (myRetryCount == _UnauthorizedRetryLimit)
+            if (myAuthorizationRetryCount == _UnauthorizedRetryLimit)
             {
                 myResponse.Data = null;
                 myResponse.ErrorException = null;
                 myResponse.ErrorMessage = $"Failed to authorize. Retry limit of {_UnauthorizedRetryLimit} has been reached.";
                 myResponse.ResponseStatus = ResponseStatus.Aborted;
             }
+            else if (myErrorRetryCount == _ErroredRetryLimit)
+            {
+                myResponse.Data = null;
+                myResponse.ErrorException = null;
+                myResponse.ErrorMessage = $"Failed to receive a successful response. Retry limit of {_ErroredRetryLimit} has been reached.";
+                myResponse.ResponseStatus = ResponseStatus.Error;
+            }
             return myResponse;
+        }
+
+        private int CalculateWait(int myIteration)
+        {
+            return (int)(Math.Round(0.21412 + 0.155521 * Math.Exp(1.05038 * myIteration), 3) * 60000);
         }
 
         private class Authentication_Response
