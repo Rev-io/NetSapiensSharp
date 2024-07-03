@@ -1,3 +1,6 @@
+> [!WARNING]  
+> This repository is no longer updated or maintained.
+
 # NetSapiensSharp
 
 An easy-to-use .NET client library for NetSapiens REST API.  
