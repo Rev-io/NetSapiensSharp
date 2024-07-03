@@ -17,6 +17,7 @@ namespace NetSapiensSharp.Objects
             public string pwd { get; set; }
             public string pwd_hash { get; set; }
             public string group { get; set; }
+            public string site { get; set; }
             public string dir { get; set; }
             public string email { get; set; }
             public string presence { get; set; }
